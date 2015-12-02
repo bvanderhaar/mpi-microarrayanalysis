@@ -26,3 +26,7 @@
 *.exe
 *.out
 *.app
+microarrayanalysis
+
+# Mac OS
+.DS_Store
