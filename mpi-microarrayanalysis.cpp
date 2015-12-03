@@ -1,15 +1,31 @@
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include <unistd.h>
 #include <mpi.h>
 #include <cstdlib>
+#include <sstream>
+#include <fstream>
+#include <iostream>
 
 #define MASTER 0
 #define TAG 0
 #define MAX 25
-const long long MSGSIZE = 9999999999;
+
+string slurp(const string &filename) {
+  ifstream in(filename, ifstream::in);
+  stringstream sstr;
+  sstr << in.rdbuf();
+  string file = sstr.str();
+  return file;
+}
+
+
 
 int main(int argc, char *argv[]) {
+  stirng source_data = slurp("NCI-60.csv");
+
+
+
   int my_rank, source, num_nodes;
   char *message = new char[MSGSIZE];
 
