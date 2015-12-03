@@ -14,17 +14,14 @@ std::string slurp(const std::string &filename) {
   return file;
 }
 
-int main(int argc, char *argv[]) {
-  int i = 0, current_row, current_col;
+std::vector<std::vector<std::string>> vectorize(std::string filename, int rows,
+                                                int column_size) {
+  int current_row, current_col;
   std::string current_line, current_pos;
-  int rows = 4550;
-  int column_size = 63;
-  // int array[][] = new int[rows][column size]
-  std::vector<std::vector<std::string>> data(4551,
-                                             std::vector<std::string>(63, ""));
-  std::string source_data = slurp("NCI-60.csv");
+  std::vector<std::vector<std::string>> data(
+      rows, std::vector<std::string>(column_size, ""));
+  std::string source_data = slurp(filename);
   std::istringstream source_data_stream(source_data);
-
   for (current_row = 0; std::getline(source_data_stream, current_line);
        current_row++) {
     std::stringstream row_stream(current_line);
@@ -33,10 +30,16 @@ int main(int argc, char *argv[]) {
       data[current_row][current_col] = current_pos;
     }
   }
+  return data;
+}
 
+int main(int argc, char *argv[]) {
+  int current_col, rows = 4550, column_size = 63;
+  std::vector<std::vector<std::string>> vector =
+      vectorize("NCI-60.csv", rows, column_size);
   std::cout << "Printing last row: ";
   for (current_col = 0; current_col < column_size; current_col++) {
-    std::cout << data[4549][current_col] << " ";
+    std::cout << vector[4549][current_col] << " ";
   }
   std::cout << std::endl;
 }
