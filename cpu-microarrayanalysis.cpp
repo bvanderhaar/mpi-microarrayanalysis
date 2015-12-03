@@ -17,7 +17,7 @@ std::string slurp(const std::string &filename) {
 int main(int argc, char *argv[]) {
   int i = 0, current_row, current_col;
   std::string current_line, current_pos;
-  int rows = 4551;
+  int rows = 4550;
   int column_size = 63;
   // int array[][] = new int[rows][column size]
   std::vector<std::vector<std::string>> data(4551,
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 
   std::cout << "Printing last row: ";
   for (current_col = 0; current_col < column_size; current_col++) {
-    std::cout << data[4550][current_col] << " ";
+    std::cout << data[4549][current_col] << " ";
   }
   std::cout << std::endl;
 }
