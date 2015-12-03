@@ -10,21 +10,10 @@
 #define MASTER 0
 #define TAG 0
 #define MAX 25
-
-string slurp(const string &filename) {
-  ifstream in(filename, ifstream::in);
-  stringstream sstr;
-  sstr << in.rdbuf();
-  string file = sstr.str();
-  return file;
-}
-
-
+const long long MSGSIZE = 99999;
 
 int main(int argc, char *argv[]) {
-  stirng source_data = slurp("NCI-60.csv");
-
-
+  // stirng source_data = slurp("NCI-60.csv");
 
   int my_rank, source, num_nodes;
   char *message = new char[MSGSIZE];

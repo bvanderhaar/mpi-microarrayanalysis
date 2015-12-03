@@ -5,18 +5,18 @@
 #include <fstream>
 #include <iostream>
 
-
-string slurp(const string &filename) {
-  ifstream in(filename, ifstream::in);
-  stringstream sstr;
+std::string slurp(const std::string &filename) {
+  std::ifstream in(filename, std::ifstream::in);
+  std::stringstream sstr;
   sstr << in.rdbuf();
-  string file = sstr.str();
+  std::string file = sstr.str();
   return file;
 }
 
-
-
 int main(int argc, char *argv[]) {
-  stirng source_data = slurp("NCI-60.csv");
-
+  std::string source_data = slurp("NCI-60.csv");
+  std::istringstream source_data_stream(source_data);
+  for (std::string line; std::getline(source_data_stream, line);) {
+    std::cout << ">> " + line + "\n";
+  }
 }
