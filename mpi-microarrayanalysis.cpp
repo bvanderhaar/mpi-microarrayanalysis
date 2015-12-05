@@ -6,6 +6,8 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <vector>
+#include "BVshared.h"
 
 #define MASTER 0
 #define TAG 0
