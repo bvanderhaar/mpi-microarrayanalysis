@@ -22,15 +22,11 @@ int main(int argc, char *argv[]) {
 
   for (i = 0; i < 8; i++) {
     if (!vector[4549][i + 8].empty()) {
-      std::cout << "Trying to convert " << vector[4549][i + 1] << " to double"
-                << std::endl;
       renal.push_back(stod(vector[4549][i + 1]));
     }
   }
   for (i = 0; i < 60; i++) {
     if (!vector[4549][i + 8].empty()) {
-      std::cout << "Trying to convert " << vector[4549][i + 8] << " to double"
-                << std::endl;
       normal.push_back(stod(vector[4549][i + 8]));
     }
   }
@@ -43,6 +39,8 @@ int main(int argc, char *argv[]) {
   std::cout << "Renal Standard Deviation: " << standard_deviation(renal)
             << std::endl;
   std::cout << "Normal Standard Deviation: " << standard_deviation(normal)
+            << std::endl;
+  std::cout << "Students T-Statistc: " << students_t_stat(renal, normal)
             << std::endl;
 
   return 0;

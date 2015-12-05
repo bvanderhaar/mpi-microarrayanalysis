@@ -52,6 +52,16 @@ double standard_deviation(std::vector<double> source) {
   return sqrt(squared_mean);
 }
 
+double students_t_stat(std::vector<double> source1,
+                       std::vector<double> source2) {
+  double mean_diff = mean(source1) - mean(source2);
+  double source1_avg_std_dev =
+      pow(standard_deviation(source1), 2) / source1.size();
+  double source2_avg_std_dev =
+      pow(standard_deviation(source2), 2) / source2.size();
+  return mean_diff / (sqrt(source1_avg_std_dev + source2_avg_std_dev));
+}
+
 void print_1d_vector(std::vector<double> vector) {
   for (int i = 0; i < vector.size(); i++) {
     std::cout << vector[i] << ",";
