@@ -1,12 +1,8 @@
-#include <stdio.h>
-#include <string>
-#include <unistd.h>
-#include <mpi.h>
-#include <cstdlib>
-#include <sstream>
-#include <fstream>
+#include <cmath>
 #include <iostream>
+#include <string>
 #include <vector>
+#include <mpi.h>
 #include "BVshared.h"
 
 #define MASTER 0
