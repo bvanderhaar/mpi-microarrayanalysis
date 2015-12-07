@@ -11,7 +11,6 @@ gene_expression_vector(std::vector<std::vector<std::string>> raw_data) {
   double current_element;
   bool process = true;
   std::vector<gene_expression> gene_data;
-  std::cout << "Processing vector with rows: " << raw_data.size() << std::endl;
   for (current_row = 1; current_row < raw_data.size(); current_row++) {
     gene_expression ge_row;
     ge_row.gene_name = raw_data[current_row][0];
@@ -38,14 +37,6 @@ gene_expression_vector(std::vector<std::vector<std::string>> raw_data) {
       }
       process = true;
     }
-    if (vector_has_inf(ge_row.control)) {
-      std::cout << "Gene " << ge_row.gene_name << "corrupt control read"
-                << std::endl;
-    }
-    if (vector_has_inf(ge_row.renal_disease)) {
-      std::cout << "Gene " << ge_row.gene_name << "corrupt renal read"
-                << std::endl;
-    }
     gene_data.push_back(ge_row);
   }
   return gene_data;
@@ -55,9 +46,6 @@ gene_result process(gene_expression data_row) {
   int i;
   // combine vectors to do t-stat permutations
   std::vector<double> all_gene_data;
-  if (data_row.renal_disease.size() == 0) {
-    std::cout << "FATAL: Source renal is size zero!" << std::endl;
-  }
   all_gene_data.reserve(data_row.renal_disease.size() +
                         data_row.control.size()); // preallocate memory
   all_gene_data.insert(all_gene_data.end(), data_row.renal_disease.begin(),
@@ -83,18 +71,10 @@ gene_result process(gene_expression data_row) {
     }*/
     permutation_t_stats.push_back(random_t_stat);
   }
-  if (vector_has_inf(permutation_t_stats)) {
-    std::cout << "FATAL: inf found in permutation for Gene "
-              << data_row.gene_name << std::endl;
-  }
 
   // find the d-score
   double t_stat = students_t_stat(data_row.renal_disease, data_row.control);
   double random_t_stat_mean = mean(permutation_t_stats);
-  if (random_t_stat_mean != random_t_stat_mean) {
-    std::cout << "Found NaN in random_t_stat_mean, Gene ID "
-              << data_row.gene_name << std::endl;
-  }
   double random_standard_deviation = standard_deviation(permutation_t_stats);
   double absolute_value = std::abs(t_stat - random_t_stat_mean);
   double d_score = absolute_value / random_standard_deviation;

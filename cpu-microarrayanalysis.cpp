@@ -1,4 +1,3 @@
-#include <cmath>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -10,20 +9,19 @@ int main(int argc, char *argv[]) {
   std::vector<std::vector<std::string>> vector =
       vectorize("NCI-60.csv", rows, column_size);
 
-  // "type" the matrix
   std::vector<gene_expression> gene_expressions =
       gene_expression_vector(vector);
 
-  for (i = 0; i < rows; i++) {
-    /*std::cout << "Processing renal: ";
-    print_1d_vector(gene_expressions[i].renal_disease);
-    std::cout << "Processing control: ";
-    print_1d_vector(gene_expressions[i].control); */
+  // indicate output format
+  std::cout << "Gene name, D-Score" << std::endl;
+  clock_t cpu_start = clock();
+  for (i = 0; i < gene_expressions.size(); i++) {
     gene_result result = process(gene_expressions[i]);
     std::cout.precision(10);
-    std::cout << "Gene name, D-score: " << result.gene_name << ", "
-              << result.d_score << std::endl;
+    std::cout << result.gene_name << ", " << result.d_score << std::endl;
   }
-
+  clock_t cpu_stop = clock();
+  double elapsed_cpu = double(cpu_stop - cpu_start) / (CLOCKS_PER_SEC / 1000);
+  std::cout << "CPU Time Taken (msec): " << elapsed_cpu << std::endl;
   return 0;
 }
