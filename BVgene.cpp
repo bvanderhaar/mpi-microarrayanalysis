@@ -14,7 +14,6 @@ gene_expression_vector(std::vector<std::vector<std::string>> raw_data) {
   for (current_row = 1; current_row < raw_data.size(); current_row++) {
     gene_expression ge_row;
     ge_row.gene_name = raw_data[current_row][0];
-    ////std::cout << "Processing gene: " << ge_row.gene_name << std::endl;
     for (current_col = 0; current_col < raw_data[current_row].size();
          current_col++) {
       try {
@@ -25,13 +24,9 @@ gene_expression_vector(std::vector<std::vector<std::string>> raw_data) {
 
       if (process) {
         if (current_col > 0 && current_col < 9) {
-          /*std::cout << "Processing element (type, value): "
-                    << "renal, " << current_element << std::endl; */
           ge_row.renal_disease.push_back(current_element);
         }
         if (current_col >= 9) {
-          /*std::cout << "Processing element (type, value): "
-                    << "control, " << current_element << std::endl; */
           ge_row.control.push_back(current_element);
         }
       }
@@ -64,11 +59,6 @@ gene_result process(gene_expression data_row) {
                        all_gene_data.end());
     // add the random t-stat to the t-stat list
     double random_t_stat = students_t_stat(all_gene_data1, all_gene_data2);
-    /*if (std::isinf(random_t_stat)) {
-      std::cout << "This data set is infinite: ";
-      print_1d_vector(all_gene_data1);
-      print_1d_vector(all_gene_data2);
-    }*/
     permutation_t_stats.push_back(random_t_stat);
   }
 
