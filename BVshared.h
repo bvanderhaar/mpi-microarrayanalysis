@@ -7,3 +7,4 @@ double standard_deviation(std::vector<double> source);
 void print_1d_vector(std::vector<double> vector);
 double students_t_stat(std::vector<double> source1,
                        std::vector<double> source2);
+bool vector_has_inf(std::vector<double> source);

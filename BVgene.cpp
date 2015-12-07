@@ -5,10 +5,59 @@
 #include "BVshared.h"
 #include "BVgene.h"
 
+std::vector<gene_expression>
+gene_expression_vector(std::vector<std::vector<std::string>> raw_data) {
+  int current_row, current_col;
+  double current_element;
+  bool process = true;
+  std::vector<gene_expression> gene_data;
+  std::cout << "Processing vector with rows: " << raw_data.size() << std::endl;
+  for (current_row = 1; current_row < raw_data.size(); current_row++) {
+    gene_expression ge_row;
+    ge_row.gene_name = raw_data[current_row][0];
+    ////std::cout << "Processing gene: " << ge_row.gene_name << std::endl;
+    for (current_col = 0; current_col < raw_data[current_row].size();
+         current_col++) {
+      try {
+        current_element = std::stod(raw_data[current_row][current_col]);
+      } catch (std::exception &e) {
+        process = false;
+      }
+
+      if (process) {
+        if (current_col > 0 && current_col < 9) {
+          /*std::cout << "Processing element (type, value): "
+                    << "renal, " << current_element << std::endl; */
+          ge_row.renal_disease.push_back(current_element);
+        }
+        if (current_col >= 9) {
+          /*std::cout << "Processing element (type, value): "
+                    << "control, " << current_element << std::endl; */
+          ge_row.control.push_back(current_element);
+        }
+      }
+      process = true;
+    }
+    if (vector_has_inf(ge_row.control)) {
+      std::cout << "Gene " << ge_row.gene_name << "corrupt control read"
+                << std::endl;
+    }
+    if (vector_has_inf(ge_row.renal_disease)) {
+      std::cout << "Gene " << ge_row.gene_name << "corrupt renal read"
+                << std::endl;
+    }
+    gene_data.push_back(ge_row);
+  }
+  return gene_data;
+}
+
 gene_result process(gene_expression data_row) {
   int i;
   // combine vectors to do t-stat permutations
   std::vector<double> all_gene_data;
+  if (data_row.renal_disease.size() == 0) {
+    std::cout << "FATAL: Source renal is size zero!" << std::endl;
+  }
   all_gene_data.reserve(data_row.renal_disease.size() +
                         data_row.control.size()); // preallocate memory
   all_gene_data.insert(all_gene_data.end(), data_row.renal_disease.begin(),
@@ -27,16 +76,27 @@ gene_result process(gene_expression data_row) {
                        all_gene_data.end());
     // add the random t-stat to the t-stat list
     double random_t_stat = students_t_stat(all_gene_data1, all_gene_data2);
-    std::cout << "Random T Stat (i, stat): " << i << ", " << random_t_stat
-              << std::endl;
+    /*if (std::isinf(random_t_stat)) {
+      std::cout << "This data set is infinite: ";
+      print_1d_vector(all_gene_data1);
+      print_1d_vector(all_gene_data2);
+    }*/
     permutation_t_stats.push_back(random_t_stat);
+  }
+  if (vector_has_inf(permutation_t_stats)) {
+    std::cout << "FATAL: inf found in permutation for Gene "
+              << data_row.gene_name << std::endl;
   }
 
   // find the d-score
   double t_stat = students_t_stat(data_row.renal_disease, data_row.control);
   double random_t_stat_mean = mean(permutation_t_stats);
+  if (random_t_stat_mean != random_t_stat_mean) {
+    std::cout << "Found NaN in random_t_stat_mean, Gene ID "
+              << data_row.gene_name << std::endl;
+  }
   double random_standard_deviation = standard_deviation(permutation_t_stats);
-  double d_score = std::abs((double)(t_stat - random_t_stat_mean)) /
-                   random_standard_deviation;
+  double absolute_value = std::abs(t_stat - random_t_stat_mean);
+  double d_score = absolute_value / random_standard_deviation;
   return gene_result(data_row.gene_name, d_score);
 }
