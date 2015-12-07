@@ -32,3 +32,6 @@ NCI-60.csv
 
 # Mac OS
 .DS_Store
+
+# output
+output.txt
