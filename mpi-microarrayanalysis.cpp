@@ -1,17 +1,21 @@
-#include <cmath>
 #include <iostream>
 #include <string>
 #include <vector>
 #include <mpi.h>
 #include "BVshared.h"
+#include "BVgene.h"
 
 #define MASTER 0
 #define TAG 0
 #define MAX 25
-const long long MSGSIZE = 99999;
+const int MSGSIZE = sizeof(double);
 
 int main(int argc, char *argv[]) {
-  // stirng source_data = slurp("NCI-60.csv");
+  int rows = 4550, column_size = 69, i;
+  std::vector<std::vector<std::string>> vector =
+      vectorize("NCI-60.csv", rows, column_size);
+  std::vector<gene_expression> gene_expressions =
+      gene_expression_vector(vector);
 
   int my_rank, source, num_nodes;
   char *message = new char[MSGSIZE];
@@ -21,20 +25,20 @@ int main(int argc, char *argv[]) {
   MPI_Comm_size(MPI_COMM_WORLD, &num_nodes);
   double program_start = MPI_Wtime();
   if (my_rank != MASTER) {
-    double message_sent = MPI_Wtime();
-    for (long long i = 0; i < MSGSIZE; i++) {
-      message[i] = 'a' + (std::rand() % 26);
-    }
-    MPI_Send(&message, strlen(message) + 1, MPI_CHAR, MASTER, TAG,
+    // pick row to process by rank
+    double d_score = get_dscore(gene_expressions[my_rank-1].renal_disease, gene_expressions[my_rank-1].control);
+    MPI_Send(&d_score, sizeof(d_score), MPI_DOUBLE, MASTER, TAG,
              MPI_COMM_WORLD);
 
   } else {
-    printf("Num_nodes: %d\n", num_nodes);
-    printf("Hello from Master (process %d)!\n", my_rank);
+    std::vector<gene_result> gene_results;
+    ////printf("Num_nodes: %d\n", num_nodes);
+    ////printf("Hello from Master (process %d)!\n", my_rank);
     MPI_Status status;
     for (source = 1; source < num_nodes; source++) {
-      MPI_Recv(&message, MSGSIZE, MPI_CHAR, source, TAG, MPI_COMM_WORLD,
+      MPI_Recv(&d_score, MSGSIZE, MPI_DOUBLE, source, TAG, MPI_COMM_WORLD,
                MPI_STATUS_IGNORE);
+      gene_results.push_back(gene_result())
     }
 
     double program_end = MPI_Wtime();
