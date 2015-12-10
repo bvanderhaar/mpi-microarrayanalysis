@@ -5,6 +5,16 @@
 #include "BVshared.h"
 #include "BVgene.h"
 
+std::map<int, std::string>
+gene_index(std::vector<gene_expression> gene_expression_vector) {
+  std::map<int, std::string> gene_index_data;
+  for (int i = 0; i < gene_expression_vector.size(); i++) {
+    gene_index_data.insert(
+        std::pair<int, std::string>(i, gene_expression_vector[i].gene_name));
+  }
+  return gene_index_data;
+}
+
 std::vector<gene_expression>
 gene_expression_vector(std::vector<std::vector<std::string>> raw_data) {
   int current_row, current_col;

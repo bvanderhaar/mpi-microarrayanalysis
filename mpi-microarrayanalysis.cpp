@@ -24,27 +24,35 @@ int main(int argc, char *argv[]) {
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
   MPI_Comm_size(MPI_COMM_WORLD, &num_nodes);
   double program_start = MPI_Wtime();
+  double d_score;
   if (my_rank != MASTER) {
     // pick row to process by rank
-    double d_score = get_dscore(gene_expressions[my_rank-1].renal_disease, gene_expressions[my_rank-1].control);
-    MPI_Send(&d_score, sizeof(d_score), MPI_DOUBLE, MASTER, TAG,
-             MPI_COMM_WORLD);
+    d_score = get_dscore(gene_expressions[my_rank - 1].renal_disease,
+                         gene_expressions[my_rank - 1].control);
+    MPI_Send(&d_score, sizeof(double), MPI_DOUBLE, MASTER, TAG, MPI_COMM_WORLD);
 
   } else {
-    std::vector<gene_result> gene_results;
-    ////printf("Num_nodes: %d\n", num_nodes);
-    ////printf("Hello from Master (process %d)!\n", my_rank);
     MPI_Status status;
+    std::vector<gene_result> gene_results;
+    std::map<int, std::string> gene_name_index = gene_index(gene_expressions);
     for (source = 1; source < num_nodes; source++) {
-      MPI_Recv(&d_score, MSGSIZE, MPI_DOUBLE, source, TAG, MPI_COMM_WORLD,
-               MPI_STATUS_IGNORE);
-      gene_results.push_back(gene_result())
+      MPI_Recv(&d_score, sizeof(double), MPI_DOUBLE, source, TAG,
+               MPI_COMM_WORLD, &status);
+      std::string gene_name =
+          gene_name_index.find(status.MPI_SOURCE - 1)->second;
+      gene_results.push_back(gene_result(gene_name, d_score));
+    }
+
+    std::cout.precision(10);
+    for (int i = 0; i < gene_results.size(); i++) {
+      std::cout << gene_results[i].gene_name << ", " << gene_results[i].d_score
+                << std::endl;
     }
 
     double program_end = MPI_Wtime();
     double program_elapsed = program_end - program_start;
-    printf("Nodes, Message Size, Program Execution Time, %d,%lld,%f\n",
-           num_nodes, MSGSIZE, program_elapsed);
+    printf("Nodes, Message Size, Program Execution Time, %d,%lu,%f\n",
+           num_nodes, sizeof(double), program_elapsed);
   }
 
   MPI_Finalize();
