@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <random>
 #include "BVshared.h"
 #include "BVgene.h"
 
