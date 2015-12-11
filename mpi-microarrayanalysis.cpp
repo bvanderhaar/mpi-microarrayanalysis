@@ -34,17 +34,19 @@ int main(int argc, char *argv[]) {
       message_str = encode_gene_result(
           gene_result(gene_expressions[i].gene_name, d_score));
       MPI_Send((void *)message_str.c_str(), message_str.size(), MPI_CHAR,
-               MASTER, TAG, MPI_COMM_WORLD);
+               MASTER, i, MPI_COMM_WORLD);
     }
   } else {
     MPI_Status status;
     std::vector<gene_result> gene_results;
     std::map<int, std::string> gene_name_index = gene_index(gene_expressions);
     for (source = 1; source < rows; source++) {
-      MPI_Recv(&message, MESSAGE_SIZE, MPI_DOUBLE, source, TAG, MPI_COMM_WORLD,
-               &status);
-      std::string message_str(message);
-      gene_results.push_back(decode_gene_result(message_str));
+      for (i = 0; i < 10; i++) {
+        MPI_Recv(&message, MESSAGE_SIZE, MPI_DOUBLE, source, i, MPI_COMM_WORLD,
+                 &status);
+        std::string message_str(message);
+        gene_results.push_back(decode_gene_result(message_str));
+      }
     }
     std::cout.precision(10);
     for (i = 0; i < gene_results.size(); i++) {
