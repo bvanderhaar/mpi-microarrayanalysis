@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
   if (my_rank != MASTER) {
     // pick rows to process by rank
     end_row = my_rank * 10;
-    if (end_row > rows) {
+    if (end_row < rows) {
       start_row = end_row - 10;
       for (i = start_row; i < end_row; i++) {
         gene_result result = process(gene_expressions[i]);
