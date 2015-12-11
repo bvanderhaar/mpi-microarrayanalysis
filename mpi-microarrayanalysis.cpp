@@ -33,7 +33,6 @@ int main(int argc, char *argv[]) {
     start_row = end_row - 10;
     for (i = start_row; i < end_row; i++) {
       if (i < rows) {
-        std::cout << i << " row processing" << std::endl;
         double message = get_dscore(gene_expressions[i].renal_disease,
                                     gene_expressions[i].control);
         MPI_Send(&message, sizeof(double), MPI_DOUBLE, MASTER, i,
@@ -42,10 +41,7 @@ int main(int argc, char *argv[]) {
     }
   } else {
     std::vector<gene_result> gene_results;
-    // std::map<int, std::string> gene_name_index =
-    // gene_index(gene_expressions);
     for (i = 0; i < rows; i++) {
-      //std::cout << i << " row waiting for processing" << std::endl;
       MPI_Irecv(&buffered_messages[i], sizeof(double), MPI_DOUBLE,
                 MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &requests[i]);
     }
