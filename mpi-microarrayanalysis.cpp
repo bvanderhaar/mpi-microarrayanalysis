@@ -36,8 +36,8 @@ int main(int argc, char *argv[]) {
                MPI_COMM_WORLD, &status);
       int rank = status.MPI_SOURCE - 1;
       gene_name = gene_name_index.find(rank)->second;
-      std::cout << "gene_name: " << gene_name << " d-score " << d_score
-                << std::endl;
+      /*std::cout << "gene_name: " << gene_name << " d-score " << d_score
+                << std::endl; */
       gene_results.push_back(gene_result(gene_name, d_score));
     }
     std::cout.precision(10);
