@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
     if (end_row < rows) {
       start_row = end_row - 10;
       for (i = start_row; i < end_row; i++) {
+        std::cout << i << " row processing" << std::endl;
         gene_result result = process(gene_expressions[i]);
         message_str = encode_gene_result(result);
         strcpy(message, message_str.c_str());
@@ -40,11 +41,10 @@ int main(int argc, char *argv[]) {
   } else {
     MPI_Status status;
     std::vector<gene_result> gene_results;
-    // std::map<int, std::string> gene_name_index =
-    // gene_index(gene_expressions);
+    //std::map<int, std::string> gene_name_index = gene_index(gene_expressions);
     for (i = 0; i < rows; i++) {
       std::cout << i << " row waiting for processing" << std::endl;
-      MPI_Recv(&message, MESSAGE_SIZE, MPI_CHAR, source, i, MPI_COMM_WORLD,
+      MPI_Irecv(&message, MESSAGE_SIZE, MPI_CHAR, source, i, MPI_COMM_WORLD,
                &status);
       MPI_Get_count(&status, MPI_CHAR, &number_amount);
       std::string message_str(message, number_amount);
