@@ -40,12 +40,14 @@ int main(int argc, char *argv[]) {
   } else {
     MPI_Status status;
     std::vector<gene_result> gene_results;
-    std::map<int, std::string> gene_name_index = gene_index(gene_expressions);
+    //std::map<int, std::string> gene_name_index = gene_index(gene_expressions);
     for (i = 0; i < rows; i++) {
+      std::cout << i << " row waiting for processing" << std::endl;
       MPI_Recv(&message, MESSAGE_SIZE, MPI_CHAR, source, i, MPI_COMM_WORLD,
                &status);
       MPI_Get_count(&status, MPI_CHAR, &number_amount);
       std::string message_str(message, number_amount);
+      std::cout << i << " row done" << std::endl;
       gene_results.push_back(decode_gene_result(message_str));
     }
     double program_end = MPI_Wtime();
