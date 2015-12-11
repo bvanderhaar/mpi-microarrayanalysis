@@ -33,8 +33,8 @@ int main(int argc, char *argv[]) {
                            gene_expressions[i].control);
       message_str = encode_gene_result(
           gene_result(gene_expressions[i].gene_name, d_score));
-      MPI_Send(message_str.c_str(), message_str.size(), MPI_CHAR, MASTER, TAG,
-               MPI_COMM_WORLD);
+      MPI_Send((void *)message_str.c_str(), message_str.size(), MPI_CHAR,
+               MASTER, TAG, MPI_COMM_WORLD);
     }
   } else {
     MPI_Status status;
