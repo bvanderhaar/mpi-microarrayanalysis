@@ -18,8 +18,9 @@ int main(int argc, char *argv[]) {
   clock_t cpu_start = clock();
   for (i = 0; i < gene_expressions.size(); i++) {
     gene_result result = process(gene_expressions[i]);
+    gene_result result2 = decode_gene_result(encode_gene_result(result));
     std::cout.precision(10);
-    std::cout << result.gene_name << ", " << result.d_score << std::endl;
+    std::cout << result2.gene_name << ", " << result2.d_score << std::endl;
   }
   clock_t cpu_stop = clock();
   double elapsed_cpu = double(cpu_stop - cpu_start) / (CLOCKS_PER_SEC / 1000);

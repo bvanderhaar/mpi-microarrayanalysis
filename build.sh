@@ -10,5 +10,5 @@ if [[ $OSTYPE == darwin* ]]; then
 fi
 if [[ $OSTYPE == linux* ]]; then
   mpic++ -std=c++11 -pedantic mpi-microarrayanalysis.cpp BVshared.cpp BVgene.cpp -o mpi-microarrayanalysis
-  chmod +x mpi-microarrayanalysis.cpp
+  chmod +x mpi-microarrayanalysis
 fi
