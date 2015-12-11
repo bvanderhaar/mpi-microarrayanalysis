@@ -27,26 +27,26 @@ int main(int argc, char *argv[]) {
   if (my_rank != MASTER) {
     // pick rows to process by rank
     end_row = my_rank * 10;
-    start_row = end_row - 10;
-    for (i = start_row; i < end_row; i++) {
-      gene_result result = process(gene_expressions[i]);
-      message_str = encode_gene_result(result);
-      strcpy(message, message_str.c_str());
-      MPI_Send(&message, message_str.size(), MPI_CHAR, MASTER, i,
-               MPI_COMM_WORLD);
+    if (end_row > rows) {
+      start_row = end_row - 10;
+      for (i = start_row; i < end_row; i++) {
+        gene_result result = process(gene_expressions[i]);
+        message_str = encode_gene_result(result);
+        strcpy(message, message_str.c_str());
+        MPI_Send(&message, message_str.size(), MPI_CHAR, MASTER, i,
+                 MPI_COMM_WORLD);
+      }
     }
   } else {
     MPI_Status status;
     std::vector<gene_result> gene_results;
     std::map<int, std::string> gene_name_index = gene_index(gene_expressions);
-    for (source = 1; source < num_nodes; source++) {
-      for (i = 0; i < 10; i++) {
-        MPI_Recv(&message, MESSAGE_SIZE, MPI_CHAR, source, i, MPI_COMM_WORLD,
-                 &status);
-        MPI_Get_count(&status, MPI_CHAR, &number_amount);
-        std::string message_str(message, number_amount);
-        gene_results.push_back(decode_gene_result(message_str));
-      }
+    for (i = 0; i < rows; i++) {
+      MPI_Recv(&message, MESSAGE_SIZE, MPI_CHAR, source, i, MPI_COMM_WORLD,
+               &status);
+      MPI_Get_count(&status, MPI_CHAR, &number_amount);
+      std::string message_str(message, number_amount);
+      gene_results.push_back(decode_gene_result(message_str));
     }
     double program_end = MPI_Wtime();
     double program_elapsed = program_end - program_start;
