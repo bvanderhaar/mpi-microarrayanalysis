@@ -11,6 +11,7 @@ int main(int argc, char *argv[]) {
 
   std::vector<gene_expression> gene_expressions =
       gene_expression_vector(vector);
+  std::map<int, std::string> gene_name_index = gene_index(gene_expressions);
 
   // indicate output format
   std::cout << "Gene name, D-Score" << std::endl;
