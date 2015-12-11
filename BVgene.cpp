@@ -1,11 +1,28 @@
 #include <cmath>
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <vector>
 #include <random>
 #include <algorithm>
 #include "BVshared.h"
 #include "BVgene.h"
+
+std::string encode_gene_result(gene_result gene_result_to_encode) {
+  std::ostringstream strs;
+  strs << gene_result_to_encode.d_score;
+  std::string d_score_s = strs.str();
+  return gene_result_to_encode.gene_name + "," + d_score_s;
+}
+
+gene_result decode_gene_result(std::string encoded_gene_result) {
+  std::string delimiter = ",";
+  std::string gene_name =
+      encoded_gene_result.substr(0, encoded_gene_result.find(delimiter));
+  std::string d_score = encoded_gene_result.substr(
+      encoded_gene_result.find(delimiter) + 1, encoded_gene_result.size() - 1);
+  return gene_result(gene_name, std::stod(d_score));
+}
 
 std::map<int, std::string>
 gene_index(std::vector<gene_expression> gene_expression_vector) {

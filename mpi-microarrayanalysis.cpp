@@ -7,11 +7,14 @@
 
 #define MASTER 0
 #define TAG 0
+const int MESSAGE_SIZE = 50;
 
 int main(int argc, char *argv[]) {
-  int rows = 4550, column_size = 69, i, my_rank, num_nodes, source, start_row;
+  int rows = 4550, column_size = 69, i, my_rank, num_nodes, source, start_row,
+      end_row;
   double d_score, program_start = MPI_Wtime();
-  std::string gene_name;
+  std::string gene_name, message_str;
+  char message[MESSAGE_SIZE];
   std::vector<std::vector<std::string>> vector =
       vectorize("NCI-60.csv", rows, column_size);
   std::vector<gene_expression> gene_expressions =
@@ -23,21 +26,23 @@ int main(int argc, char *argv[]) {
 
   if (my_rank != MASTER) {
     // pick rows to process by rank
-    start_row = rank * 10;
+    start_row = my_rank * 10;
     end_row = start_row - 10;
-    for (i = start_row; i > end_row; i-- ) {
+    for (i = start_row; i > end_row; i--) {
       d_score = get_dscore(gene_expressions[i].renal_disease,
                            gene_expressions[i].control);
-      MPI_Send(&d_score, sizeof(double), MPI_DOUBLE, MASTER, TAG, MPI_COMM_WORLD);
+      message_str = encode_gene_result(gene_expressions[i].gene_name, d_score);
+      MPI_Send(message_str.c_str(), message_str.size(), MPI_CHAR, MASTER, TAG,
+               MPI_COMM_WORLD);
     }
   } else {
     MPI_Status status;
     std::vector<gene_result> gene_results;
     std::map<int, std::string> gene_name_index = gene_index(gene_expressions);
     for (source = 1; source < rows; source++) {
-      MPI_Recv(&d_score, sizeof(double), MPI_DOUBLE, source, TAG,
-               MPI_COMM_WORLD, &status);
-      int rank = status.MPI_SOURCE - 1;
+      MPI_Recv(&message, MESSAGE_SIZE, MPI_DOUBLE, source, TAG, MPI_COMM_WORLD,
+               &status);
+      // int rank = status.MPI_SOURCE - 1;
       gene_name = gene_name_index.find(rank)->second;
       gene_results.push_back(gene_result(gene_name, d_score));
     }
