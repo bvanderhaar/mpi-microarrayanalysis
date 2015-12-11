@@ -28,12 +28,12 @@ int main(int argc, char *argv[]) {
 
   if (my_rank != MASTER) {
     // pick rows to process by rank
-    std::cout << my_rank << " rank started processing" << std::endl;
+    //std::cout << my_rank << " rank started processing" << std::endl;
     end_row = my_rank * 10;
     if (end_row < rows) {
       start_row = end_row - 10;
       for (i = start_row; i < end_row; i++) {
-        std::cout << i << " row processing" << std::endl;
+        //std::cout << i << " row processing" << std::endl;
         double message = get_dscore(gene_expressions[i].renal_disease,
                                     gene_expressions[i].control);
         MPI_Send(&message, sizeof(double), MPI_DOUBLE, MASTER, i,
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     // std::map<int, std::string> gene_name_index =
     // gene_index(gene_expressions);
     for (i = 0; i < rows; i++) {
-      std::cout << i << " row waiting for processing" << std::endl;
+      //std::cout << i << " row waiting for processing" << std::endl;
       MPI_Irecv(&buffered_messages[i], sizeof(double), MPI_DOUBLE,
                 MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &requests[i]);
     }
