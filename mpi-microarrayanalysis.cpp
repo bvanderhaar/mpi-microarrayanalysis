@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
     MPI_Status status;
     std::vector<gene_result> gene_results;
     std::map<int, std::string> gene_name_index = gene_index(gene_expressions);
-    for (source = 1; source < rows; source++) {
+    for (source = 1; source < num_nodes; source++) {
       for (i = 0; i < 10; i++) {
         MPI_Recv(&message, MESSAGE_SIZE, MPI_CHAR, source, i, MPI_COMM_WORLD,
                  &status);
