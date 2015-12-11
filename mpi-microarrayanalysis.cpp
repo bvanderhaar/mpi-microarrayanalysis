@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     if (end_row < rows) {
       start_row = end_row - 10;
       for (i = start_row; i < end_row; i++) {
-        //std::cout << i << " row processing" << std::endl;
+        std::cout << i << " row processing" << std::endl;
         double message = get_dscore(gene_expressions[i].renal_disease,
                                     gene_expressions[i].control);
         MPI_Send(&message, sizeof(double), MPI_DOUBLE, MASTER, i,
