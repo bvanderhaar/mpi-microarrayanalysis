@@ -29,7 +29,6 @@ int main(int argc, char *argv[]) {
     end_row = my_rank * 10;
     start_row = end_row - 10;
     for (i = start_row; i < end_row; i++) {
-      std::cout << "processing row " << i << std::endl;
       gene_result result = process(gene_expressions[i]);
       message_str = encode_gene_result(result);
       strcpy(message, message_str.c_str());
@@ -46,18 +45,18 @@ int main(int argc, char *argv[]) {
                  &status);
         MPI_Get_count(&status, MPI_CHAR, &number_amount);
         std::string message_str(message, number_amount);
-        std::cout << "received message " << message_str << std::endl;
         gene_results.push_back(decode_gene_result(message_str));
       }
     }
+    double program_end = MPI_Wtime();
+    double program_elapsed = program_end - program_start;
 
     std::cout.precision(10);
     for (i = 0; i < gene_results.size(); i++) {
       std::cout << gene_results[i].gene_name << ", " << gene_results[i].d_score
                 << std::endl;
     }
-    double program_end = MPI_Wtime();
-    double program_elapsed = program_end - program_start;
+
     printf("Nodes, Message Size, Program Execution Time, %d,%lu,%f\n",
            num_nodes, sizeof(double), program_elapsed);
   }
