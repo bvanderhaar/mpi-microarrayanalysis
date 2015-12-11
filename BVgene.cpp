@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <random>
+#include <algorithm>
 #include "BVshared.h"
 #include "BVgene.h"
 
@@ -58,7 +59,9 @@ double get_dscore(std::vector<double> disease, std::vector<double> control) {
   std::vector<double> permutation_t_stats;
   for (i = 0; i < 1000; i++) {
     // shuffle the order
-    std::random_shuffle(all_gene_data.begin(), all_gene_data.end());
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(all_gene_data.begin(), all_gene_data.end(), g);
     // split the vector into 2
     std::vector<double> all_gene_data1(all_gene_data.begin(),
                                        all_gene_data.begin() + disease.size()),
