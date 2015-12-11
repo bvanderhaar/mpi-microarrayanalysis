@@ -9,7 +9,7 @@
 #define TAG 0
 
 int main(int argc, char *argv[]) {
-  int rows = 4550, column_size = 69, i, my_rank, num_nodes, source;
+  int rows = 4550, column_size = 69, i, my_rank, num_nodes, source, start_row;
   double d_score, program_start = MPI_Wtime();
   std::string gene_name;
   std::vector<std::vector<std::string>> vector =
@@ -22,16 +22,19 @@ int main(int argc, char *argv[]) {
   MPI_Comm_size(MPI_COMM_WORLD, &num_nodes);
 
   if (my_rank != MASTER) {
-    // pick row to process by rank
-    d_score = get_dscore(gene_expressions[my_rank - 1].renal_disease,
-                         gene_expressions[my_rank - 1].control);
-    MPI_Send(&d_score, sizeof(double), MPI_DOUBLE, MASTER, TAG, MPI_COMM_WORLD);
-
+    // pick rows to process by rank
+    start_row = rank * 10;
+    end_row = start_row - 10;
+    for (i = start_row; i > end_row; i-- ) {
+      d_score = get_dscore(gene_expressions[i].renal_disease,
+                           gene_expressions[i].control);
+      MPI_Send(&d_score, sizeof(double), MPI_DOUBLE, MASTER, TAG, MPI_COMM_WORLD);
+    }
   } else {
     MPI_Status status;
     std::vector<gene_result> gene_results;
     std::map<int, std::string> gene_name_index = gene_index(gene_expressions);
-    for (source = 1; source < num_nodes; source++) {
+    for (source = 1; source < rows; source++) {
       MPI_Recv(&d_score, sizeof(double), MPI_DOUBLE, source, TAG,
                MPI_COMM_WORLD, &status);
       int rank = status.MPI_SOURCE - 1;
