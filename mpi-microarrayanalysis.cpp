@@ -26,6 +26,7 @@ int main(int argc, char *argv[]) {
 
   if (my_rank != MASTER) {
     // pick rows to process by rank
+    std::cout << my_rank << " rank started processing" << std::endl;
     end_row = my_rank * 10;
     if (end_row < rows) {
       start_row = end_row - 10;
