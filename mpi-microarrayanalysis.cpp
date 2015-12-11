@@ -30,9 +30,9 @@ int main(int argc, char *argv[]) {
     // pick rows to process by rank
     //std::cout << my_rank << " rank started processing" << std::endl;
     end_row = my_rank * 10;
-    if (end_row < rows) {
-      start_row = end_row - 10;
-      for (i = start_row; i < end_row; i++) {
+    start_row = end_row - 10;
+    for (i = start_row; i < end_row; i++) {
+      if (i < rows) {
         std::cout << i << " row processing" << std::endl;
         double message = get_dscore(gene_expressions[i].renal_disease,
                                     gene_expressions[i].control);
