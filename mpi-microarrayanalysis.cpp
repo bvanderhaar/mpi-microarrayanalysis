@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     //std::map<int, std::string> gene_name_index = gene_index(gene_expressions);
     for (i = 0; i < rows; i++) {
       std::cout << i << " row waiting for processing" << std::endl;
-      MPI_Irecv(&message, MESSAGE_SIZE, MPI_CHAR, source, i, MPI_COMM_WORLD,
+      MPI_Recv(&message, MESSAGE_SIZE, MPI_CHAR, source, i, MPI_COMM_WORLD,
                &status);
       MPI_Get_count(&status, MPI_CHAR, &number_amount);
       std::string message_str(message, number_amount);
