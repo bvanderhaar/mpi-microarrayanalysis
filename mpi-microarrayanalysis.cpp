@@ -12,9 +12,11 @@ const int MESSAGE_SIZE = 500;
 int main(int argc, char *argv[]) {
   int rows = 4550, column_size = 69, i, my_rank, num_nodes, source, start_row,
       end_row, number_amount;
-  double program_start = MPI_Wtime();
+  double program_start = MPI_Wtime(), result;
+  double buffered_messages[rows];
+  MPI_Request requests[rows];
   std::string gene_name, message_str;
-  char message[MESSAGE_SIZE];
+  double message;
   std::vector<std::vector<std::string>> vector =
       vectorize("NCI-60.csv", rows, column_size);
   std::vector<gene_expression> gene_expressions =
@@ -32,26 +34,28 @@ int main(int argc, char *argv[]) {
       start_row = end_row - 10;
       for (i = start_row; i < end_row; i++) {
         std::cout << i << " row processing" << std::endl;
-        gene_result result = process(gene_expressions[i]);
-        message_str = encode_gene_result(result);
-        strcpy(message, message_str.c_str());
-        MPI_Send(&message, message_str.size(), MPI_CHAR, MASTER, i,
+        double message = get_dscore(gene_expressions[i].renal_disease,
+                                    gene_expressions[i].control);
+        MPI_Send(&message, sizeof(double), MPI_DOUBLE, MASTER, i,
                  MPI_COMM_WORLD);
       }
     }
   } else {
-    MPI_Status status;
     std::vector<gene_result> gene_results;
-    //std::map<int, std::string> gene_name_index = gene_index(gene_expressions);
+    // std::map<int, std::string> gene_name_index =
+    // gene_index(gene_expressions);
     for (i = 0; i < rows; i++) {
       std::cout << i << " row waiting for processing" << std::endl;
-      MPI_Recv(&message, MESSAGE_SIZE, MPI_CHAR, source, i, MPI_COMM_WORLD,
-               &status);
-      MPI_Get_count(&status, MPI_CHAR, &number_amount);
-      std::string message_str(message, number_amount);
-      std::cout << i << " row done" << std::endl;
-      gene_results.push_back(decode_gene_result(message_str));
+      MPI_Irecv(&buffered_messages[i], sizeof(double), MPI_DOUBLE,
+                MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &requests[i]);
     }
+    MPI_Waitall(rows - 1, requests, MPI_STATUSES_IGNORE);
+    std::map<int, std::string> gene_name_index = gene_index(gene_expressions);
+    for (i = 0; i < rows; i++) {
+      std::string gene_name = gene_name_index.find(i)->second;
+      gene_results.push_back(gene_result(gene_name, buffered_messages[i]));
+    }
+
     double program_end = MPI_Wtime();
     double program_elapsed = program_end - program_start;
 
